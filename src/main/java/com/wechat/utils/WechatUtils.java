@@ -86,9 +86,14 @@ public class WechatUtils {
 
     public static void main(String[]args){
         goWechatHome();
-        clickAddFriend("zzu_402");
+        clickAddFriend("15959340993");
         goWechatHome();
-        sendMessage("zzu_402","hello");
+        int time=0;
+        while(!sendMessage("15959340993","hello")){
+            time++;
+            if(time>10)
+                break;
+        }
     }
 
 
