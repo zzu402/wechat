@@ -89,9 +89,11 @@ public class AdbUtils {
 
     private static boolean doAdbCommand(String command){
         try {
-            Runtime.getRuntime().exec(command);
+            Process p1 =Runtime.getRuntime().exec(command);
+            p1.waitFor();
+            SleepUtils.sleep(250L);
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtils.error(AdbUtils.class,"Adb命令执行失败",e);
             return  false;
         }
@@ -111,6 +113,6 @@ public class AdbUtils {
     }
 
     public static void main(String[] args) {
-        inputText("jianglong");
+        printScreen();
     }
 }
