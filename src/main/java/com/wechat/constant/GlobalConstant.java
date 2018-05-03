@@ -10,7 +10,7 @@ public class GlobalConstant {
 
     public static String ADB_PATH = "adb";//ADB 路径，电脑设置了环境变量直接写adb，否则要加上文件路径
 
-    public static String IMAGE_LOCATION="F://wechat";//图片目录
+    public static String IMAGE_LOCATION="G://wechat";//图片目录
 
     public static String SCREENSHOT_LOCATION = IMAGE_LOCATION+"//screenshot.png";//截屏位置
 

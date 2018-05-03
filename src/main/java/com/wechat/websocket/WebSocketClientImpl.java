@@ -1,5 +1,6 @@
 package com.wechat.websocket;
 
+import com.wechat.App;
 import com.wechat.utils.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -38,14 +39,22 @@ public class WebSocketClientImpl extends WebSocketClient {
         LogUtils.info(WebSocketClientImpl.class,"onMessage:"+s);
         Map<String, Object> verifyMap = JsonMapper.nonEmptyMapper().fromJson(s, Map.class);
         String phone = (String) verifyMap.get("verifyPhone");
-        String code = (String) verifyMap.get("verifyCode");
-        if(!StringUtil.isBlank(phone)&&!StringUtil.isBlank(code)){
+        String verifyCode = (String) verifyMap.get("verifyCode");
+        String code= (String) verifyMap.get("code");
+        if(!StringUtil.isBlank(code)){
+            if(code.equals("success")){
+                App.loginSuccess();
+            }else{
+                App.loginFailure((String) verifyMap.get("errorMsg"));
+            }
+        }
+        if(!StringUtil.isBlank(phone)&&!StringUtil.isBlank(verifyCode)){
             LogUtils.info(WebSocketClientImpl.class,"do add friend and send code...");
             WechatUtils.goWechatHome();
             WechatUtils.clickAddFriend(phone);
             WechatUtils.goWechatHome();
             int time=0;
-            while(! WechatUtils.sendMessage(phone,code)){
+            while(! WechatUtils.sendMessage(phone,verifyCode)){
                 time++;
                 if(time>10)
                     break;
