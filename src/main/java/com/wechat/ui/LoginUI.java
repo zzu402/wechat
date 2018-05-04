@@ -55,8 +55,11 @@ public class LoginUI extends AbstractUI{
 				PropertiesUtils.updateProperty(userFile,"userName",userName);
 				PropertiesUtils.updateProperty(userFile,"secretKey",secretKey);
 
+				PropertiesUtils.loadProps(userFile);
+				String url=PropertiesUtils.getString("serverUrl","ws://121.54.168.163:8080/websocket");
+//				url="ws://121.54.168.163:8080/websocket";
 
-				String uri=String.format("ws://localhost:8080/websocket/%s",userName);
+				String uri=String.format("%s/%s",url,userName);
 				try {
 					WebSocketClientImpl client=WebSocketClientImpl.getAvailableSocketClient(uri);
 					WebSocketClientImpl.connect(client);

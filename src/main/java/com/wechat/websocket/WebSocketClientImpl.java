@@ -60,10 +60,10 @@ public class WebSocketClientImpl extends WebSocketClient {
                     break;
             }
             if(time<=10){
-                verifyMap.put("code","success");
+                verifyMap.put("resultCode","success");
                 sendMessage(socketClient,JsonMapper.nonEmptyMapper().toJson(verifyMap));
             }else{
-                verifyMap.put("code","error");
+                verifyMap.put("resultCode","error");
                 sendMessage(socketClient,JsonMapper.nonEmptyMapper().toJson(verifyMap));
             }
         }

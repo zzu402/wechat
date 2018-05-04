@@ -2,12 +2,11 @@ package com.wechat;
 
 import com.wechat.ui.LoginUI;
 import com.wechat.ui.MainUI;
-import com.wechat.utils.JsonMapper;
-import com.wechat.utils.LogUtils;
-import com.wechat.utils.SleepUtils;
+import com.wechat.utils.*;
 import com.wechat.websocket.WebSocketClientImpl;
 
 import javax.swing.*;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,24 +27,18 @@ public class App {
     }
 
     public static void loginFailure(String message) {
-        JOptionPane.showMessageDialog(null, message);
+        JOptionPane.showMessageDialog(loginUI.frame, message);
     }
 
 
     public static void main(String args[]) {
+        PropertiesUtils.loadProps(PropertiesUtils.getUserDir());
+        String url=PropertiesUtils.getString("serverUrl","");
+        if(StringUtil.isBlank(url)){
+            File userFile= PropertiesUtils.getUserDir();
+            PropertiesUtils.updateProperty(userFile,"serverUrl","ws://121.54.168.163:8080/websocket");
+        }
         loginUI = new LoginUI(WindowConstants.EXIT_ON_CLOSE);
         loginUI.frame.setVisible(true);
-//        String userName="test";
-//        String secretKey="1172109637e0a084dc82a0fe2decf44ed52e1da42cd08eec648b54749bdabde793dd644b3d1fadefd65227f6336697b2";
-//        String uri=String.format("ws://localhost:8080/websocket/%s",userName);
-//        try {
-//            WebSocketClientImpl client=WebSocketClientImpl.getAvailableSocketClient(uri);
-//            WebSocketClientImpl.connect(client);
-//            WebSocketClientImpl.keepClientAlive(client,secretKey);
-//        } catch (URISyntaxException e) {
-//            LogUtils.error(App.class,"程序异常",e);
-//        }
     }
-
-
 }
