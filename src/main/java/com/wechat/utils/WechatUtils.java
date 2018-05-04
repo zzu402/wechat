@@ -38,12 +38,14 @@ public class WechatUtils {
     }
 
     public static boolean sendMessage(String friend,String text){
-        if(queryFriend(friend)) {
+        if(queryFriend(friend)) {//这种情况可能是Adb输入不全
             clickContact();
             clickChatInput();
             inputChatContent(text);
             sendText();
             return  true;
+        }else{//输入不全的时候要先去点击X去除输入内容
+            AdbUtils.touch(1040,120);
         }
         return  false;
     }
@@ -83,8 +85,8 @@ public class WechatUtils {
             AdbUtils.touch(900,150);
         }
     }
-
-//    public static void main(String[]args){
+    public static void main(String[]args){
+        sendMessage("zu_402","1234");
 //        goWechatHome();
 //        clickAddFriend("15959340993");
 //        goWechatHome();
@@ -94,7 +96,7 @@ public class WechatUtils {
 //            if(time>10)
 //                break;
 //        }
-//    }
+    }
 
 
 }

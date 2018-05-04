@@ -1,6 +1,7 @@
 package com.wechat.websocket;
 
 import com.wechat.App;
+import com.wechat.queue.MqManager;
 import com.wechat.utils.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -50,24 +51,40 @@ public class WebSocketClientImpl extends WebSocketClient {
         }
         if(!StringUtil.isBlank(phone)&&!StringUtil.isBlank(verifyCode)){
             LogUtils.info(WebSocketClientImpl.class,"do add friend and send code...");
-            WechatUtils.goWechatHome();
-            WechatUtils.clickAddFriend(phone);
-            WechatUtils.goWechatHome();
-            int time=0;
-            while(! WechatUtils.sendMessage(phone,verifyCode)){
-                time++;
-                if(time>10)
-                    break;
-            }
-            if(time<=10){
-                verifyMap.put("resultCode","success");
-                sendMessage(socketClient,JsonMapper.nonEmptyMapper().toJson(verifyMap));
-            }else{
-                verifyMap.put("resultCode","error");
-                sendMessage(socketClient,JsonMapper.nonEmptyMapper().toJson(verifyMap));
+            try {
+                MqManager.getMq(String.format("VERIFY_FRIEND")).push(JsonMapper.nonEmptyMapper().toJson(verifyMap));
+            } catch (InterruptedException e) {
+                LogUtils.error(WebSocketClientImpl.class,"操作进入消息队列异常",e);
             }
         }
     }
+    public void doWith() throws InterruptedException {
+        while(true) {
+            String json = MqManager.getMq(String.format("VERIFY_FRIEND")).pop();
+            Map<String, Object> verifyMap = JsonMapper.nonEmptyMapper().fromJson(json, Map.class);
+            Long userId = (Integer) verifyMap.get("userId") * 1L;
+            Long verifyInfoId = (Integer) verifyMap.get("verifyInfoId") * 1L;
+            String phone = (String) verifyMap.get("verifyPhone");
+            String verifyCode = (String) verifyMap.get("verifyCode");
+            WechatUtils.goWechatHome();
+            WechatUtils.clickAddFriend(phone);
+            WechatUtils.goWechatHome();
+            int time = 0;
+            while (!WechatUtils.sendMessage(phone, verifyCode)) {
+                time++;
+                if (time > 10)
+                    break;
+            }
+            if (time <= 10) {
+                verifyMap.put("resultCode", "success");
+                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+            } else {
+                verifyMap.put("resultCode", "error");
+                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+            }
+        }
+    }
+
 
     @Override
     public void onClose(int i, String s, boolean b) {
@@ -102,6 +119,19 @@ public class WebSocketClientImpl extends WebSocketClient {
     }
 
     public static void keepClientAlive(WebSocketClientImpl client,String secretKey){
+
+        new Thread(new Runnable() {//处理任务
+            @Override
+            public void run() {
+                try {
+                    client.doWith();
+                } catch (InterruptedException e) {
+                    LogUtils.error(WebSocketClientImpl.class,"消息出队列异常",e);
+                }
+            }
+        }).start();
+
+
         new Thread(new Runnable() {
             @Override
             public void run() {

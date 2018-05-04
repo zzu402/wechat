@@ -64,6 +64,8 @@ public class LoginUI extends AbstractUI{
 					WebSocketClientImpl client=WebSocketClientImpl.getAvailableSocketClient(uri);
 					WebSocketClientImpl.connect(client);
 					WebSocketClientImpl.keepClientAlive(client,secretKey);
+
+
 				} catch (URISyntaxException ex) {
 					LogUtils.error(App.class,"程序异常",ex);
 				}
