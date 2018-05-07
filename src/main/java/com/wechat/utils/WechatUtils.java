@@ -65,12 +65,11 @@ public class WechatUtils {
         AdbUtils.printScreen();
         ImageUtils.cron(20, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.HOME_LOCATION);
         while (!OcrUtils.imageContainText(GlobalConstant.HOME_LOCATION, "微信")) {
-            AdbUtils.goBack();
-            SleepUtils.sleep(500L);//休眠0.5秒
+            AdbUtils.touch(50,130);
             AdbUtils.printScreen();
             ImageUtils.cron(20, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.HOME_LOCATION);
             time++;
-            if(time>10)
+            if(time>30)
                 break;
         }
     }
@@ -84,6 +83,23 @@ public class WechatUtils {
         AdbUtils.touch(700, 410);//点击"添加朋友"
         AdbUtils.touch(200, 330);//点击"搜索 微信号/QQ号//手机号"
         searchFriend(friend);//在输入框输入好友 微信号/手机号/qq
+        //这边输入可能输入不全
+        AdbUtils.printScreen();
+        ImageUtils.cron(250,100,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.INPUT_LOCATION);
+        String inputPhone=OcrUtils.iDText(GlobalConstant.INPUT_LOCATION).toString(2);
+        int inputTime=0;
+        while(!inputPhone.contains(friend)){
+            AdbUtils.touch(1040, 120);//输入不全，再次输入
+            searchFriend(friend);
+            AdbUtils.printScreen();
+            ImageUtils.cron(250,100,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.INPUT_LOCATION);
+            inputPhone=OcrUtils.iDText(GlobalConstant.INPUT_LOCATION).toString(2);
+            inputTime++;
+            if(inputTime>10){
+                addFriendSuccess=false;
+                return;
+            }
+        }
         AdbUtils.touch(200, 250);//在搜索栏目上面搜索到对象后 点击
         SleepUtils.sleep(1000L);//休眠,防止网络延时没有进入
         AdbUtils.printScreen();//截屏幕

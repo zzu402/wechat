@@ -131,9 +131,9 @@ public class AdbUtils {
 //        }
 //        System.out.println("find in "+y);
         printScreen();
-        ImageUtils.cron(135,1800,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.IMAGE_LOCATION+"//s.png");
-        String text=OcrUtils.iDText(GlobalConstant.IMAGE_LOCATION+"//s.png").toString(2);
-        System.out.println(text);
+        ImageUtils.cron(50,100,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.IMAGE_LOCATION+"//s.png");
+//        String text=OcrUtils.iDText(GlobalConstant.IMAGE_LOCATION+"//s.png").toString(2);
+//        System.out.println(text);
 
     }
 }
