@@ -167,6 +167,18 @@ public class WebSocketClientImpl extends WebSocketClient {
                 }
             }
         }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    if(client.isClosed()){
+                        client.connect();
+                    }
+                    SleepUtils.sleep(3*60*1000L);//每隔3分钟去检查一次
+                }
+            }
+        }).start();
     }
 
     public static void sendMessage(WebSocketClientImpl client, String message) {
