@@ -104,7 +104,7 @@ public class WechatUtils {
         SleepUtils.sleep(1000L);//休眠,防止网络延时没有进入
         AdbUtils.printScreen();//截屏幕
         int y = 0;
-        ImageUtils.cron(200, 1050 + y, 600, 100, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
+        ImageUtils.cron(200, 1050 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
         String text = OcrUtils.iDText(GlobalConstant.ADD_LOCATION).toString(2);//获得裁剪部分区域的文字
         while (y < 700) {
             if (text.contains("添加")) {//该好友并没有添加到通讯录
@@ -127,15 +127,15 @@ public class WechatUtils {
                         isNeedToRequestAddFriend=true;
                     }else  if(verifyText.contains("详细资料")){//这时候尝试两次了，默认是第二种情况
                         int y2=0;
-                        ImageUtils.cron(200, 1050 + y2, 600, 100, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
+                        ImageUtils.cron(200, 1050 + y2, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
                         text = OcrUtils.iDText(GlobalConstant.ADD_LOCATION).toString(2);//获得裁剪部分区域的文字
                         while(y2<700){
                             if(text.contains("发消息")){
                                 clickAndSendMsg(1050+y2,verifyCode);
                                 break;
                             }else{
-                                y2 += 150;
-                                ImageUtils.cron(200, 1050 + y2, 600, 100, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
+                                y2 += 100;
+                                ImageUtils.cron(200, 1050 + y2, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
                                 text = OcrUtils.iDText(GlobalConstant.ADD_LOCATION).toString(2);//获得裁剪部分区域的文字
                             }
                         }
@@ -151,8 +151,8 @@ public class WechatUtils {
                 clickAndSendMsg(1050+y,verifyCode);
                 break;
             } else {//什么都没有找到，继续找
-                y += 150;
-                ImageUtils.cron(200, 1050 + y, 600, 100, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
+                y += 100;
+                ImageUtils.cron(200, 1050 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
                 text = OcrUtils.iDText(GlobalConstant.ADD_LOCATION).toString(2);//获得裁剪部分区域的文字
             }
         }
@@ -162,7 +162,7 @@ public class WechatUtils {
     }
     private static void clickAndSendMsg(int y,String verifyCode){
         msgIsNoEqualCode=false;
-        AdbUtils.touch(200, y);//点击屏幕上面的发消息
+        AdbUtils.touch(200, y+70);//点击屏幕上面的发消息
         clickChatInput();//点击使得可以输入
         inputChatContent(verifyCode);//输入消息
         AdbUtils.printScreen();
@@ -193,7 +193,7 @@ public class WechatUtils {
 
 
     public static void main(String[] args) {
-        String phone = "zzu_402";
+        String phone = "15959340993";
         String verifyCode = "6845";
         WechatUtils.goWechatHome();
         WechatUtils.addFriendAndSendMsg(phone, verifyCode);
