@@ -1,10 +1,13 @@
 package com.wechat.ui;
 import com.wechat.utils.PropertiesUtils;
 import com.wechat.utils.SleepUtils;
+import com.wechat.websocket.WebSocketClientImpl;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 
 public class MainUI extends AbstractUI{
@@ -27,7 +30,17 @@ public class MainUI extends AbstractUI{
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(closeOperation);// 设置主窗体关闭按钮样式
 		frame.setResizable(false);
-
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				//去关闭socekt 连接
+				WebSocketClientImpl client=WebSocketClientImpl.getSocketClient();
+				if(client!=null&&client.isConnecting()){
+					client.close();
+				}
+				super.windowClosing(e);
+			}
+		});
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

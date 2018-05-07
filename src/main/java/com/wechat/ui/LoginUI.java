@@ -7,6 +7,8 @@ import com.wechat.websocket.WebSocketClientImpl;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URISyntaxException;
 
@@ -62,15 +64,14 @@ public class LoginUI extends AbstractUI{
 				String uri=String.format("%s/%s",url,userName);
 				try {
 					WebSocketClientImpl client=WebSocketClientImpl.getAvailableSocketClient(uri);
-					WebSocketClientImpl.connect(client);
-					WebSocketClientImpl.keepClientAlive(client,secretKey);
-
-
+					if(!client.isConnecting()) {//如果没有连接，则去连接
+						WebSocketClientImpl.connect(client);
+						WebSocketClientImpl.keepClientAlive(client);
+					}
+					WebSocketClientImpl.login(client,secretKey);
 				} catch (URISyntaxException ex) {
-					LogUtils.error(App.class,"程序异常",ex);
+					LogUtils.error(App.class, "程序异常", ex);
 				}
-
-
 
 			}
 		});
@@ -86,6 +87,17 @@ public class LoginUI extends AbstractUI{
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(closeOperation);// 设置主窗体关闭按钮样式
 		frame.setResizable(false);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				//去关闭socekt 连接
+				WebSocketClientImpl client=WebSocketClientImpl.getSocketClient();
+				if(client!=null&&client.isConnecting()){
+					client.close();
+				}
+				super.windowClosing(e);
+			}
+		});
 	}
 
 	public void init(){

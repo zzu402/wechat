@@ -23,6 +23,8 @@ public class GlobalConstant {
 
     public static String ADD_LOCATION=IMAGE_LOCATION+"//add.png";
 
+    public static String MESSAGE_LOCATION=IMAGE_LOCATION+"//message.png";
+
 
     public static String CONTACT_LOCATION=IMAGE_LOCATION+"//contact.png";
 
