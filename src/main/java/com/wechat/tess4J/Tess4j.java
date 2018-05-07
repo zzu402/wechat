@@ -17,13 +17,13 @@ public class Tess4j {
 
         //将验证码图片的内容识别为字符串
         try {
-            File imageFile = new File("F:\\wechat\\image\\message.png");
+            File imageFile = new File("F:\\wechat\\image\\add.png");
             File tessDataFolder = LoadLibs.extractTessResources("tessdata");
             Tesseract instance = new Tesseract();
-            instance.setLanguage("eng");//英文库识别数字比较准确
+            instance.setLanguage("chi_sim");//英文库识别数字比较准确
             instance.setDatapath(tessDataFolder.getAbsolutePath());
             String result = instance.doOCR(imageFile);
-            System.out.println(result);
+            System.out.println(result.trim().equals("发消息"));
         } catch (TesseractException e) {
             e.printStackTrace();
         }
