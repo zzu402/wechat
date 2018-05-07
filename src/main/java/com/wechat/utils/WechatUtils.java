@@ -153,7 +153,7 @@ public class WechatUtils {
         ImageUtils.cron(135,1800,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.MESSAGE_LOCATION);
         String text=OcrUtils.iDText(GlobalConstant.MESSAGE_LOCATION).toString(2);
         if(!text.contains(verifyCode)){
-            msgIsNoEqualCode=true;
+            isNeedAutoSendMsg=true;
         }
         sendText();//点击发送
         goWechatHome();//发送完毕后回到微信页面
