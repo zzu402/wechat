@@ -1,7 +1,6 @@
 package com.wechat.utils;
 
 import com.wechat.constant.GlobalConstant;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 /**
  * @Author: huangzz
