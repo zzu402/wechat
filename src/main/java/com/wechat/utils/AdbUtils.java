@@ -43,6 +43,11 @@ public class AdbUtils {
         doAdbCommand(command);
     }
 
+    public static void del(){
+        String command=GlobalConstant.ADB_PATH+" shell input keyevent 67";
+        doAdbCommand(command);
+    }
+
     /**
      * 改进的截图方法<br>
      * 感谢 hxzqlh
