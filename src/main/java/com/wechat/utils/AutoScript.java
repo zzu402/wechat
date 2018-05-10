@@ -119,6 +119,7 @@ public class AutoScript {
                 sendMsgAfterAddAction(750+y,verifyCode);
                 return  2;
             } else {//什么都没有找到，继续找
+                SleepUtils.sleep(100L);
                 y += 100;
                 ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
                 text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,OcrUtils.TESS4J_MODEL);;
@@ -129,19 +130,10 @@ public class AutoScript {
 
     //点完添加后，发送消息
     public static boolean sendMsgAfterAddFriend(String verifyCode){
-        //这个地方容易卡住，休眠1秒
-        SleepUtils.sleep(1000L);
+        //这个地方容易卡住，休眠3秒
+        SleepUtils.sleep(3000L);
         AdbUtils.printScreen();
         //截图之后比较下相似
-        int times=0;
-        while(!ImageUtils.isSimilarity(GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION)){
-            //表示当前页面还停留
-            SleepUtils.sleep(1000L);//休眠一秒钟
-            AdbUtils.printScreen();
-            times++;
-            if(times>5)
-                return false;
-        }
         ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
         String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,OcrUtils.TESS4J_MODEL);
         if(text.contains("验证申请")){
@@ -156,6 +148,7 @@ public class AutoScript {
                 sendMsgAfterAddAction(750+y,verifyCode);
                 return true;
             }else{
+                SleepUtils.sleep(100L);
                 y += 100;
                 ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
                 text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,OcrUtils.TESS4J_MODEL);//获得裁剪部分区域的文字
@@ -175,8 +168,8 @@ public class AutoScript {
         if(!text.contains(verifyCode)){
             for(int i=0;i<verifyCode.length();i++)
                 AdbUtils.del();
+            inputChatContent(verifyCode);//输入消息
         }
-        inputChatContent(verifyCode);//输入消息
         sendText();//点击发送
     }
 
@@ -197,6 +190,7 @@ public class AutoScript {
     }
 
     public static boolean searchFriendAndSendMessage(String friend, String text) {
+        goHome();
         int times=0;
         while(!queryFriend(friend)){
             AdbUtils.touch(1040, 120);
@@ -211,8 +205,8 @@ public class AutoScript {
         return true;
     }
 
-    //1-成功 2-表示进入到添加界失败 3-没有找到添加或发送消息按钮
-    public static int AutoRun(String wechatId,String verifyCode){
+    //1-成功 2-表示进入到添加界失败 3-没有找到添加或发送消息按钮,4-发送失败
+    public static int autoRun(String wechatId,String verifyCode){
         //1-先返回到微信主页面
         goHome();
         //2-进入微信添加好友界面
@@ -225,13 +219,24 @@ public class AutoScript {
         }
         //5-添加
         int result=doAddFriendAction(verifyCode);
-        if(result==1)
-            sendMsgAfterAddFriend(verifyCode);
+        if(result==1) {
+            if(!sendMsgAfterAddFriend(verifyCode)) {
+                if(searchFriendAndSendMessage(wechatId, verifyCode))
+                    return 4;
+            }
+        }
         else if(result==0)
             return 3;
         return 1;
     }
-    
+
+    public static void main(String args[]){
+        String wechatId="282501549";
+        String code="123456";
+        System.out.println(autoRun(wechatId,code));
+
+
+    }
 
 
 

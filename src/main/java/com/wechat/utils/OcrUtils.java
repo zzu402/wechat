@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  */
 public class OcrUtils {
     //https://console.bce.baidu.com/ai/#/ai/ocr/app/list
-    private static String APP_ID = "";
-    private static String API_KEY = "";
-    private static String SECRET_KEY = "";
+    private static String APP_ID = "11164162";
+    private static String API_KEY = "QsXNTssGCtucKWtaSQa8fHwv";
+    private static String SECRET_KEY = "z5KVwRWuwWYYhTVeGDB4jWDeosYxb66G";
 
     public static final Integer BAIDU_MODEL=1;
     public static final Integer TESS4J_MODEL=2;
@@ -57,13 +57,13 @@ public class OcrUtils {
     }
 
     public static String ocr(String imagePath,Integer model){
-        if(model==BAIDU_MODEL){
-            return baiduOcr(imagePath);
-        }
-        if(model==TESS4J_MODEL){
-            return tess4jOcr(imagePath);
-        }
-        return tess4jOcr(imagePath);
+//        if(model==BAIDU_MODEL){
+//            return baiduOcr(imagePath);
+//        }
+//        if(model==TESS4J_MODEL){
+//            return tess4jOcr(imagePath);
+//        }
+        return baiduOcr(imagePath);
     }
 
     private static Tesseract instance = null;
