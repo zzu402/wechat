@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  */
 public class OcrUtils {
     //https://console.bce.baidu.com/ai/#/ai/ocr/app/list
-    private static String APP_ID = "11164162";
-    private static String API_KEY = "QsXNTssGCtucKWtaSQa8fHwv";
-    private static String SECRET_KEY = "z5KVwRWuwWYYhTVeGDB4jWDeosYxb66G";
+    private static String APP_ID = "";
+    private static String API_KEY = "";
+    private static String SECRET_KEY = "";
 
     public static final Integer BAIDU_MODEL=1;
     public static final Integer TESS4J_MODEL=2;

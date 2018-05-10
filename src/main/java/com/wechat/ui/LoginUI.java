@@ -1,6 +1,8 @@
 package com.wechat.ui;
 import com.wechat.App;
+import com.wechat.utils.AutoScript;
 import com.wechat.utils.LogUtils;
+import com.wechat.utils.OcrUtils;
 import com.wechat.utils.PropertiesUtils;
 import com.wechat.websocket.WebSocketClientImpl;
 
@@ -15,7 +17,8 @@ import java.net.URISyntaxException;
 public class LoginUI extends AbstractUI{
 	private JTextField textField;
 	private JTextArea textArea;
-
+	private JRadioButton jb1 = new JRadioButton("Tess4jOcr",true);// 定义一个单选按钮
+	private JRadioButton jb2 = new JRadioButton("BaiduOcr");// 定义一个单选按钮
 	public LoginUI(int closeOperation) {
 		initialize(closeOperation);
 	}
@@ -24,6 +27,11 @@ public class LoginUI extends AbstractUI{
 		frame.setTitle("登陆");
 		frame.getContentPane().setLayout(null);
 		frame.setBounds(0,0,460,300);
+
+		JLabel comment = new JLabel("说明:识别模式Tess4j为本地识别，准确率无法保证。");
+		comment.setBounds(40, 0, 420, 30);
+		frame.getContentPane().add(comment);
+
 		JLabel lblSecretkey = new JLabel("用户名:");
 		lblSecretkey.setBounds(40, 40, 65, 30);
 		frame.getContentPane().add(lblSecretkey);
@@ -44,19 +52,31 @@ public class LoginUI extends AbstractUI{
 		textArea.setWrapStyleWord(true);
 		frame.getContentPane().add(textArea);
 
+		JLabel lbModel = new JLabel("识别模式:");
+		lbModel.setBounds(40, 180, 65, 30);
+		frame.getContentPane().add(lbModel);
+
+		jb1.setBounds(110,180,120,30);
+		jb2.setBounds(240,180,120,30);
+		frame.getContentPane().add(jb1);
+		frame.getContentPane().add(jb2);
+		ButtonGroup group = new ButtonGroup();
+		group.add(this.jb1);
+		group.add(this.jb2);
 		init();
 
 		JButton button = new JButton("登陆");
-		button.setBounds(100, 200, 70, 30);
+		button.setBounds(100, 230, 70, 30);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String userName=textField.getText().trim();
 				String secretKey=textArea.getText().trim();
-
+				int model=jb1.isSelected()? OcrUtils.TESS4J_MODEL:OcrUtils.BAIDU_MODEL;
+				AutoScript.setModel(model);
 				File userFile= PropertiesUtils.getUserDir();
 				PropertiesUtils.updateProperty(userFile,"userName",userName);
 				PropertiesUtils.updateProperty(userFile,"secretKey",secretKey);
-
+				PropertiesUtils.updateProperty(userFile,"ocrModel",model+"");
 				PropertiesUtils.loadProps(userFile);
 				String url=PropertiesUtils.getString("serverUrl","ws://121.54.168.163:8080/websocket");
 //				url="ws://121.54.168.163:8080/websocket";
@@ -77,7 +97,7 @@ public class LoginUI extends AbstractUI{
 		});
 		frame.getContentPane().add(button);
 		JButton button_1 = new JButton("取消");
-		button_1.setBounds(300, 200, 70, 30);
+		button_1.setBounds(300, 230, 70, 30);
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -104,13 +124,20 @@ public class LoginUI extends AbstractUI{
 		PropertiesUtils.loadProps(PropertiesUtils.getUserDir());
 		String userName=PropertiesUtils.getString("userName","");
 		String secretKey=PropertiesUtils.getString("secretKey","");
+		String model=PropertiesUtils.getString("ocrModel","2");
+		if(model.equals("1")){
+			jb2.setSelected(true);
+		}else{
+			jb1.setSelected(true);
+		}
 		textField.setText(userName);
 		textArea.setText(secretKey);
 	}
 
-//	public static void main(String[]args){
-//		AbstractUI ui=new LoginUI(WindowConstants.EXIT_ON_CLOSE);
-//		ui.frame.setVisible(true);
-//	}
+	public static void main(String args[]){
+		LoginUI loginUI=new LoginUI(WindowConstants.EXIT_ON_CLOSE);
+		loginUI.frame.setVisible(true);
+	}
+
 
 }

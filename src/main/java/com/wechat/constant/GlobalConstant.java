@@ -13,7 +13,7 @@ import java.util.Properties;
 public class GlobalConstant {
 
 
-    public static String ADB_PATH = "adb";//ADB 路径，电脑设置了环境变量直接写adb，否则要加上文件路径
+    public static String ADB_PATH = System.getProperty("user.dir")+"//adb";//ADB 路径，电脑设置了环境变量直接写adb，否则要加上文件路径
 
     public static String IMAGE_LOCATION= System.getProperty("user.dir")+"//image";//图片目录
 

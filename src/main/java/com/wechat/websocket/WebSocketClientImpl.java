@@ -41,9 +41,24 @@ public class WebSocketClientImpl extends WebSocketClient {
         Map<String, Object> verifyMap = JsonMapper.nonEmptyMapper().fromJson(s, Map.class);
         String phone = (String) verifyMap.get("verifyPhone");
         String verifyCode = (String) verifyMap.get("verifyCode");
+        String apiId= (String) verifyMap.get("baiduApiId");
+        String apiKey= (String) verifyMap.get("baiduApiKey");
+        String secretKey= (String) verifyMap.get("baiduApiSecretKey");
         String code = (String) verifyMap.get("code");
         if (!StringUtil.isBlank(code)) {
             if (code.equals("success")) {
+                OcrUtils.setAppId(apiId);
+                OcrUtils.setApiKey(apiKey);
+                OcrUtils.setSecretKey(secretKey);
+                PropertiesUtils.loadProps(PropertiesUtils.getUserDir());
+                String model=PropertiesUtils.getString("ocrModel","2");
+                if(model.equals("1")){
+                    LogUtils.info(getClass(),"百度OCR识别模式");
+                    if(StringUtil.isBlank(apiId)||StringUtil.isBlank(apiKey)||StringUtil.isBlank(secretKey)){
+                        App.loginFailure("您选择百度Ocr识别模式，请到【我的资料】后台设置信息");
+                        return;
+                    }
+                }
                 App.loginSuccess();
             } else {
                 App.loginFailure((String) verifyMap.get("errorMsg"));
@@ -67,6 +82,22 @@ public class WebSocketClientImpl extends WebSocketClient {
             Long verifyInfoId = (Integer) verifyMap.get("verifyInfoId") * 1L;
             String phone = (String) verifyMap.get("verifyPhone");
             String verifyCode = (String) verifyMap.get("verifyCode");
+
+            int result=AutoScript.autoRun(phone,verifyCode);
+            AutoScript.goHome();
+            verifyMap.put("resultCode", "error");
+            if(result==1){
+                verifyMap.put("resultCode", "success");
+            }else if(result==2){
+                verifyMap.put("errorMsg","enter add friend view failure");
+            }else if(result==3){
+                verifyMap.put("errorMsg","no find add or send button");
+            }else if(result==4){
+                verifyMap.put("errorMsg","send msg failure");
+            }
+            sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+            LogUtils.info(WebSocketClientImpl.class,"auto send msg success");
+
 //            WechatUtils.goWechatHome();
 //            WechatUtils.addFriendAndSendMsg(phone, verifyCode);
 //            if(!WechatUtils.addFriendSuccess){//如果没有添加成功

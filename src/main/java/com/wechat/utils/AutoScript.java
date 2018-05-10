@@ -11,6 +11,13 @@ import java.util.Random;
  */
 public class AutoScript {
 
+    private static int model=OcrUtils.TESS4J_MODEL;
+
+
+    public static void setModel(int model) {
+        AutoScript.model = model;
+    }
+
     private static void clickContact() {
         AdbUtils.touch(200, 450);
     }
@@ -31,12 +38,12 @@ public class AutoScript {
     public static void goHome() {//返回微信主页面
         AdbUtils.printScreen();
         ImageUtils.cron(20, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.HOME_LOCATION);
-        String text= OcrUtils.ocr(GlobalConstant.HOME_LOCATION,OcrUtils.TESS4J_MODEL);
+        String text= OcrUtils.ocr(GlobalConstant.HOME_LOCATION,model);
         while (!text.contains("微信")) {//
             AdbUtils.touch(50,130);
             AdbUtils.printScreen();
             ImageUtils.cron(20, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.HOME_LOCATION);
-            text= OcrUtils.ocr(GlobalConstant.HOME_LOCATION,OcrUtils.TESS4J_MODEL);
+            text= OcrUtils.ocr(GlobalConstant.HOME_LOCATION,model);
         }
     }
 
@@ -54,7 +61,7 @@ public class AutoScript {
         //这边输入可能输入不全
         AdbUtils.printScreen();
         ImageUtils.cron(250,100,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.INPUT_LOCATION);
-        String inputPhone=OcrUtils.ocr(GlobalConstant.INPUT_LOCATION,OcrUtils.TESS4J_MODEL);
+        String inputPhone=OcrUtils.ocr(GlobalConstant.INPUT_LOCATION,model);
         if(!inputPhone.contains(wechatId)){
             AdbUtils.touch(1040, 120);//输入不全，再次输入
             AdbUtils.inputText(wechatId);//再输入一次
@@ -78,27 +85,17 @@ public class AutoScript {
         //从上一个页面进来，这时候可能会卡住，先延时1.5秒
         SleepUtils.sleep(1500L);//
         AdbUtils.printScreen();
-        int time=0;
-        while(ImageUtils.isSimilarity(GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION)){
-            //表示当前页面还停留
-            SleepUtils.sleep(1000L);//休眠一秒钟
+        ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+        String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+        int times=0;
+        while(!text.contains("详细资料")){
+            SleepUtils.sleep(1000L);
             AdbUtils.printScreen();
-            time++;
-            if(time>10){//如果两个页面一直相似，超过10次退出
+            ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+            text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+            if(times>4)
                 return false;
-            }
-        }
-        ImageUtils.cron(0,0,1080,1920,GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION);
-        AdbUtils.printScreen();
-        time=0;
-        while(!ImageUtils.isSimilarity(GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION)){
-            //表示当前页面还停留
-            SleepUtils.sleep(1000L);//休眠一秒钟
-            AdbUtils.printScreen();
-            time++;
-            if(time>10){
-                return false;
-            }
+            times++;
         }
         return true;
     }
@@ -108,7 +105,7 @@ public class AutoScript {
         AdbUtils.printScreen();//截屏幕
         int y = 0;
         ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
-        String text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,OcrUtils.TESS4J_MODEL);//获得裁剪部分区域的文字
+        String text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,model);//获得裁剪部分区域的文字
         while (y < 900) {
             if (text.contains("添加")) {//该好友并没有添加到通讯录
                 AdbUtils.touch(200, 750 + y+70);//点击添加按钮
@@ -122,7 +119,7 @@ public class AutoScript {
                 SleepUtils.sleep(100L);
                 y += 100;
                 ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
-                text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,OcrUtils.TESS4J_MODEL);;
+                text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,model);
             }
         }
         return 0;
@@ -134,15 +131,27 @@ public class AutoScript {
         SleepUtils.sleep(3000L);
         AdbUtils.printScreen();
         //截图之后比较下相似
+
         ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
-        String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,OcrUtils.TESS4J_MODEL);
+        String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+        int times=0;
+        while(!text.contains("详细资料")&&!text.contains("验证申请")){
+            SleepUtils.sleep(2000L);
+            AdbUtils.printScreen();
+            ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+            text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+            if(times>4)
+                return false;
+            times++;
+        }
         if(text.contains("验证申请")){
             AdbUtils.touch(900, 150);
             return  false;
         }
+
         int y=0;
         ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
-        text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,OcrUtils.TESS4J_MODEL);//获得裁剪部分区域的文字
+        text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,model);//获得裁剪部分区域的文字
         while(y<900){
             if(text.contains("发消息")){
                 sendMsgAfterAddAction(750+y,verifyCode);
@@ -151,7 +160,7 @@ public class AutoScript {
                 SleepUtils.sleep(100L);
                 y += 100;
                 ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);
-                text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,OcrUtils.TESS4J_MODEL);//获得裁剪部分区域的文字
+                text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,model);//获得裁剪部分区域的文字
             }
         }
        return false;
@@ -164,7 +173,7 @@ public class AutoScript {
         inputChatContent(verifyCode);//输入消息
         AdbUtils.printScreen();
         ImageUtils.cron(135,1800,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.MESSAGE_LOCATION);
-        String text=OcrUtils.ocr(GlobalConstant.MESSAGE_LOCATION,OcrUtils.TESS4J_MODEL);
+        String text=OcrUtils.ocr(GlobalConstant.MESSAGE_LOCATION,model);
         if(!text.contains(verifyCode)){
             for(int i=0;i<verifyCode.length();i++)
                 AdbUtils.del();
@@ -185,8 +194,8 @@ public class AutoScript {
         searchFriend(friend);
         AdbUtils.printScreen();
         ImageUtils.cron(40, 200, 400, 200, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.CONTACT_LOCATION);
-        String text=OcrUtils.ocr(GlobalConstant.CONTACT_LOCATION,OcrUtils.TESS4J_MODEL);
-        return text.equals("联系人") || text.equals( "最常使用");
+        String text=OcrUtils.ocr(GlobalConstant.CONTACT_LOCATION,model);
+        return text.equals("联系人") || text.equals( "最常使用") ||text.contains("查找手机");
     }
 
     public static boolean searchFriendAndSendMessage(String friend, String text) {
@@ -221,7 +230,7 @@ public class AutoScript {
         int result=doAddFriendAction(verifyCode);
         if(result==1) {
             if(!sendMsgAfterAddFriend(verifyCode)) {
-                if(searchFriendAndSendMessage(wechatId, verifyCode))
+                if(!searchFriendAndSendMessage(wechatId, verifyCode))
                     return 4;
             }
         }
@@ -234,8 +243,6 @@ public class AutoScript {
         String wechatId="282501549";
         String code="123456";
         System.out.println(autoRun(wechatId,code));
-
-
     }
 
 

@@ -21,13 +21,25 @@ public class App {
     private static LoginUI loginUI = null;
 
     public static void loginSuccess() {
-        loginUI.frame.setVisible(false);
-        MainUI mainUI = new MainUI(WindowConstants.EXIT_ON_CLOSE);
-        mainUI.frame.setVisible(true);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                loginUI.frame.setVisible(false);
+                MainUI mainUI = new MainUI(WindowConstants.EXIT_ON_CLOSE);
+                mainUI.frame.setVisible(true);
+            }
+        });
+
     }
 
     public static void loginFailure(String message) {
-        JOptionPane.showMessageDialog(loginUI.frame, message);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JOptionPane.showMessageDialog(loginUI.frame, message);
+            }
+        });
+
+
     }
 
 
@@ -38,7 +50,12 @@ public class App {
             File userFile= PropertiesUtils.getUserDir();
             PropertiesUtils.updateProperty(userFile,"serverUrl","ws://121.54.168.163:8080/websocket");
         }
-        loginUI = new LoginUI(WindowConstants.EXIT_ON_CLOSE);
-        loginUI.frame.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                loginUI = new LoginUI(WindowConstants.EXIT_ON_CLOSE);
+                loginUI.frame.setVisible(true);
+            }
+        });
+
     }
 }
