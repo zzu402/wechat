@@ -67,41 +67,41 @@ public class WebSocketClientImpl extends WebSocketClient {
             Long verifyInfoId = (Integer) verifyMap.get("verifyInfoId") * 1L;
             String phone = (String) verifyMap.get("verifyPhone");
             String verifyCode = (String) verifyMap.get("verifyCode");
-            WechatUtils.goWechatHome();
-            WechatUtils.addFriendAndSendMsg(phone, verifyCode);
-            if(!WechatUtils.addFriendSuccess){//如果没有添加成功
-                verifyMap.put("resultCode", "error");
-                verifyMap.put("errorMsg","add friend failure");
-                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
-                LogUtils.info(WebSocketClientImpl.class,"do with error:add friend failure");
-            }else if (WechatUtils.addFriendSuccess&&WechatUtils.isNeedToRequestAddFriend){
-                verifyMap.put("resultCode", "error");
-                verifyMap.put("errorMsg","the friend need request verify");
-                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
-                LogUtils.info(WebSocketClientImpl.class,"do with error:the friend need request verify");
-            }else if(WechatUtils.addFriendSuccess&&WechatUtils.msgIsNoEqualCode){
-                verifyMap.put("resultCode", "error");
-                verifyMap.put("errorMsg","send msg no equals code");
-                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
-                LogUtils.info(WebSocketClientImpl.class,"do with error:send msg no equals code");
-            }else if (WechatUtils.addFriendSuccess&&WechatUtils.isNeedAutoSendMsg) {
-                boolean autoSuccess = WechatUtils.autoSendMsg(phone, verifyCode);
-                if (autoSuccess) {
-                    verifyMap.put("resultCode", "success");
-                    sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
-                    LogUtils.info(WebSocketClientImpl.class,"do with success");
-                } else {
-                    verifyMap.put("resultCode", "error");
-                    verifyMap.put("errorMsg","auto send msg error");
-                    sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
-                    LogUtils.info(WebSocketClientImpl.class,"do with error:auto send msg error");
-
-                }
-            }else if(WechatUtils.addFriendSuccess){
-                verifyMap.put("resultCode", "success");
-                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
-                LogUtils.info(WebSocketClientImpl.class,"auto send msg success");
-            }
+//            WechatUtils.goWechatHome();
+//            WechatUtils.addFriendAndSendMsg(phone, verifyCode);
+//            if(!WechatUtils.addFriendSuccess){//如果没有添加成功
+//                verifyMap.put("resultCode", "error");
+//                verifyMap.put("errorMsg","add friend failure");
+//                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+//                LogUtils.info(WebSocketClientImpl.class,"do with error:add friend failure");
+//            }else if (WechatUtils.addFriendSuccess&&WechatUtils.isNeedToRequestAddFriend){
+//                verifyMap.put("resultCode", "error");
+//                verifyMap.put("errorMsg","the friend need request verify");
+//                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+//                LogUtils.info(WebSocketClientImpl.class,"do with error:the friend need request verify");
+//            }else if(WechatUtils.addFriendSuccess&&WechatUtils.msgIsNoEqualCode){
+//                verifyMap.put("resultCode", "error");
+//                verifyMap.put("errorMsg","send msg no equals code");
+//                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+//                LogUtils.info(WebSocketClientImpl.class,"do with error:send msg no equals code");
+//            }else if (WechatUtils.addFriendSuccess&&WechatUtils.isNeedAutoSendMsg) {
+//                boolean autoSuccess = WechatUtils.autoSendMsg(phone, verifyCode);
+//                if (autoSuccess) {
+//                    verifyMap.put("resultCode", "success");
+//                    sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+//                    LogUtils.info(WebSocketClientImpl.class,"do with success");
+//                } else {
+//                    verifyMap.put("resultCode", "error");
+//                    verifyMap.put("errorMsg","auto send msg error");
+//                    sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+//                    LogUtils.info(WebSocketClientImpl.class,"do with error:auto send msg error");
+//
+//                }
+//            }else if(WechatUtils.addFriendSuccess){
+//                verifyMap.put("resultCode", "success");
+//                sendMessage(socketClient, JsonMapper.nonEmptyMapper().toJson(verifyMap));
+//                LogUtils.info(WebSocketClientImpl.class,"auto send msg success");
+//            }
 
         }
     }

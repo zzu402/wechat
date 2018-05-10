@@ -27,6 +27,8 @@ public class GlobalConstant {
 
     public static String INPUT_LOCATION=IMAGE_LOCATION+"//input.png";
 
+    public static String LAST_PAGE_LOCATION=IMAGE_LOCATION+"//last_page.png";
+
 
     public static String CONTACT_LOCATION=IMAGE_LOCATION+"//contact.png";
 

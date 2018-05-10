@@ -73,11 +73,11 @@
         </dependency>
 
         <!--&lt;!&ndash; https://mvnrepository.com/artifact/net.sourceforge.tess4j/tess4j &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>net.sourceforge.tess4j</groupId>-->
-            <!--<artifactId>tess4j</artifactId>-->
-            <!--<version>4.0.2</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>net.sourceforge.tess4j</groupId>
+            <artifactId>tess4j</artifactId>
+            <version>4.0.2</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.sourceforge.tess4j/tess4j -->
     </dependencies>

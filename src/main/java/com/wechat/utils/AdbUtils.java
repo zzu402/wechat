@@ -96,7 +96,7 @@ public class AdbUtils {
         try {
             Process p1 =Runtime.getRuntime().exec(command);
             p1.waitFor();
-            SleepUtils.sleep(250L);
+            SleepUtils.sleep(500L);
             return true;
         } catch (Exception e) {
             LogUtils.error(AdbUtils.class,"Adb命令执行失败",e);
@@ -118,27 +118,6 @@ public class AdbUtils {
     }
 
     public static void main(String[] args) {
-//        printScreen();
-//        int y=0;
-//        ImageUtils.cron(200,1050+y,600,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.IMAGE_LOCATION+"//a_"+y+".png");
-//        System.out.println(GlobalConstant.IMAGE_LOCATION+"//a_"+y+".png");
-//        String text=OcrUtils.iDText(GlobalConstant.IMAGE_LOCATION+"//a_"+y+".png").toString(2);
-//        System.out.println(text);
-//        while(!text.contains("添加")&&!text.contains("发消息")){
-//            y+=150;
-//            ImageUtils.cron(200,1050+y,600,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.IMAGE_LOCATION+"//a_"+y+".png");
-//            text=OcrUtils.iDText(GlobalConstant.IMAGE_LOCATION+"//a_"+y+".png").toString(2);
-//            System.out.println(text);
-//            if(y>700) {
-//                System.out.println("no found");
-//                return;
-//            }
-//        }
-//        System.out.println("find in "+y);
         printScreen();
-//        ImageUtils.cron(50,100,500,100, GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.IMAGE_LOCATION+"//s.png");
-//        String text=OcrUtils.iDText(GlobalConstant.IMAGE_LOCATION+"//s.png").toString(2);
-//        System.out.println(text);
-
     }
 }
