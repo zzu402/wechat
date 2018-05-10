@@ -93,4 +93,8 @@ public class OcrUtils {
             return baiduOcr(imagePath);
         }
     }
+
+    public static void main(String args[]){
+        System.out.println(tess4jOcr(GlobalConstant.ADD_LOCATION));
+    }
 }
