@@ -57,13 +57,13 @@ public class OcrUtils {
     }
 
     public static String ocr(String imagePath,Integer model){
-//        if(model==BAIDU_MODEL){
-//            return baiduOcr(imagePath);
-//        }
-//        if(model==TESS4J_MODEL){
-//            return tess4jOcr(imagePath);
-//        }
-        return baiduOcr(imagePath);
+        if(model==BAIDU_MODEL){
+            return baiduOcr(imagePath);
+        }
+        if(model==TESS4J_MODEL){
+            return tess4jOcr(imagePath);
+        }
+        return tess4jOcr(imagePath);
     }
 
     private static Tesseract instance = null;
