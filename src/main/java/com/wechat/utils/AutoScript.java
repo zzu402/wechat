@@ -33,7 +33,41 @@ public class AutoScript {
     private static void sendText() {
         AdbUtils.touch(940, 1820);
     }
+    private static boolean checkHeaderView(String str){
+        AdbUtils.printScreen();
+        ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+        String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+        int times=0;
+        while(!text.contains(str)){
+            times++;
+            if(times>20){
+                return false;
+            }
+            SleepUtils.sleep(200L);
+            AdbUtils.printScreen();
+            ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+            text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+        }
+        return true;
+    }
 
+    private static boolean checkHeaderContainText(String str){
+        AdbUtils.printScreen();
+        ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+        String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+        int times=0;
+        while(text.contains(str)){
+            times++;
+            if(times>20){
+                return true;
+            }
+            SleepUtils.sleep(200L);
+            AdbUtils.printScreen();
+            ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
+            text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
+        }
+        return false;
+    }
 
     public static void goHome() {//返回微信主页面
         AdbUtils.printScreen();
@@ -49,13 +83,19 @@ public class AutoScript {
 
 
     //进入添加好友的界面
-    public static void enterAddSearchView(){
+    public static boolean enterAddSearchView(){
         AdbUtils.touch(970, 120);//点击左上角"+"
+        SleepUtils.sleep(100L);
         AdbUtils.touch(700, 410);//点击"添加朋友"
+        if(!checkHeaderView("添加")){
+            return false;
+        }
         AdbUtils.touch(200, 330);//点击"搜索 微信号/QQ号//手机号"
+        return  true;
     }
     //输入微信id进行微信号搜索
     public static void doAddSearchAcion(String wechatId){
+        checkHeaderContainText("添加朋友");
         Random random=new Random();
         AdbUtils.inputText(wechatId);//在输入框输入好友 微信号/手机号/qq
         //这边输入可能输入不全
@@ -70,39 +110,19 @@ public class AutoScript {
         AdbUtils.inputText(String.valueOf(random.nextInt(9)));
         //然后删除
         AdbUtils.del();
-
-        //截取页面作为特征值
-        AdbUtils.printScreen();
-        ImageUtils.cron(0,0,1080,1920,GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION);
-
         //在搜索栏目上面搜索到对象后 点击
         AdbUtils.touch(200, 250);
-
     }
 
     //进入到添加界面
     public static boolean  enterAddView(){
-        //从上一个页面进来，这时候可能会卡住，先延时1.5秒
-        SleepUtils.sleep(1500L);//
-        AdbUtils.printScreen();
-        ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
-        String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
-        int times=0;
-        while(!text.contains("详细资料")){
-            SleepUtils.sleep(1000L);
-            AdbUtils.printScreen();
-            ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
-            text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
-            if(times>4)
-                return false;
-            times++;
-        }
-        return true;
+        //从上一个页面进来，这时候可能会卡住，先延时1秒
+        SleepUtils.sleep(1000L);//
+        return checkHeaderView("详细资料");
     }
 
-    //1 表示未添加，这时候要进行点击添加按钮 2表示已经添加了，这时候点击发送消息，0 表示什么都没找到
+    //1 表示未添加，这时候要进行点击添加按钮 2表示已经添加了，这时候点击发送消息，0 表示什么都没找到,3表示已经添加但是点击发送消息失败
     public static int doAddFriendAction(String verifyCode){//这个时候该做添加朋友的操作了
-        AdbUtils.printScreen();//截屏幕
         int y = 0;
         ImageUtils.cron(200, 750 + y, 600, 150, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.ADD_LOCATION);//裁剪部分区域
         String text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,model);//获得裁剪部分区域的文字
@@ -113,7 +133,8 @@ public class AutoScript {
                 ImageUtils.cron(0,0,1080,1920,GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION);
                 return 1;
             } else if (text.contains("发消息")) {//该好友已经添加到通讯录，可以直接发消息
-                sendMsgAfterAddAction(750+y,verifyCode);
+                if(!sendMsgAfterAddAction(750+y,verifyCode))
+                    return 3;
                 return  2;
             } else {//什么都没有找到，继续找
                 SleepUtils.sleep(100L);
@@ -127,11 +148,14 @@ public class AutoScript {
 
     //点完添加后，发送消息
     public static boolean sendMsgAfterAddFriend(String verifyCode){
-        //这个地方容易卡住，休眠3秒
-        SleepUtils.sleep(3000L);
+        //这个地方容易卡住，休眠2秒
+        SleepUtils.sleep(2000L);
         AdbUtils.printScreen();
-        //截图之后比较下相似
-
+        //截图之后比较下相似,相似再等待2秒
+        if(ImageUtils.isSimilarity(GlobalConstant.SCREENSHOT_LOCATION,GlobalConstant.LAST_PAGE_LOCATION)){
+            SleepUtils.sleep(2000L);
+            AdbUtils.printScreen();
+        }
         ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
         String text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
         int times=0;
@@ -140,7 +164,7 @@ public class AutoScript {
             AdbUtils.printScreen();
             ImageUtils.cron(100, 100, 400, 80, GlobalConstant.SCREENSHOT_LOCATION, GlobalConstant.VERIFY_LOCATION);
             text=OcrUtils.ocr(GlobalConstant.VERIFY_LOCATION,model);
-            if(times>4)
+            if(times>5)
                 return false;
             times++;
         }
@@ -154,7 +178,8 @@ public class AutoScript {
         text = OcrUtils.ocr(GlobalConstant.ADD_LOCATION,model);//获得裁剪部分区域的文字
         while(y<900){
             if(text.contains("发消息")){
-                sendMsgAfterAddAction(750+y,verifyCode);
+                if(!sendMsgAfterAddAction(750+y,verifyCode))
+                    return false;
                 return true;
             }else{
                 SleepUtils.sleep(100L);
@@ -166,9 +191,10 @@ public class AutoScript {
        return false;
     }
 
-    private static void sendMsgAfterAddAction(int y,String verifyCode){
-        SleepUtils.sleep(1000L);//给模拟器一个反应时间
+    private static boolean sendMsgAfterAddAction(int y,String verifyCode){
         AdbUtils.touch(200, y+100);//点击屏幕上面的发消息
+        if(checkHeaderContainText("详细资料"))
+            return false;
         clickChatInput();//点击使得可以输入
         inputChatContent(verifyCode);//输入消息
         AdbUtils.printScreen();
@@ -180,6 +206,7 @@ public class AutoScript {
             inputChatContent(verifyCode);//输入消息
         }
         sendText();//点击发送
+        return true;
     }
 
     private static void clickSearch() {
@@ -233,6 +260,9 @@ public class AutoScript {
                 if(!searchFriendAndSendMessage(wechatId, verifyCode))
                     return 4;
             }
+        }else if(result==3){
+            if(!searchFriendAndSendMessage(wechatId, verifyCode))
+                return 4;
         }
         else if(result==0)
             return 3;
